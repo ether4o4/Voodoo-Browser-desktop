@@ -1,0 +1,28 @@
+{
+  "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+  "nonce": "ICEiIyQlJicoKSor",
+  "pairId": "00112233445566778899aabbccddeeff",
+  "direction": "request",
+  "payload": {
+    "v": 1,
+    "requestId": "ffeeddccbbaa99887766554433221100",
+    "seq": 1,
+    "op": "pair",
+    "name": "Test phone",
+    "items": [
+      {
+        "id": "12345678-1234-4234-9234-123456789abc",
+        "kind": "note",
+        "title": "Draft",
+        "body": "Keep this line.",
+        "createdAt": 1793228400000
+      }
+    ]
+  },
+  "envelope": {
+    "v": 1,
+    "pairId": "00112233445566778899aabbccddeeff",
+    "nonce": "ICEiIyQlJicoKSor",
+    "data": "qRjQUlapNixoGTO7pGuAsLRr1r7h5gaLCJIPcSvoP2hMt908uRID7CHIWqZrOi360xvcvrgQDxKrE10nfZ4osqgE9ynm9ozkqUbLSdowXEPvtWdhxI+mbqcgrE84MLy1djFDJep+xYjr9cAlmdT8IUOlunSm5oI8YsEzIsG1sRwR3U+tD8Myg1a7l1w5ByXHtakJGfHzs+RUKocN5LylqPvZHlu1hxvpw43r+NRLfd+Jn57mJqe2H1HipcGDSvPei8oFNhjvqjp7P5mcjKHOrblAkV+y/SmuNoY6bnVsfz0MJF674DICzx3IVacmW+3P+nJbWk6Y1A=="
+  }
+}

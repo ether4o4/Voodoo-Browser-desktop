@@ -1,0 +1,37 @@
+name: Windows preview
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:app
+      - run: npm run package
+      - name: Package preview
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'dist/Voodoo Browser-win32-x64' -DestinationPath 'dist/Voodoo-Browser-windows-x64.zip' -CompressionLevel Fastest
+          $hash = Get-FileHash -LiteralPath 'dist/Voodoo-Browser-windows-x64.zip' -Algorithm SHA256
+          "$($hash.Hash.ToLower())  Voodoo-Browser-windows-x64.zip" | Set-Content -LiteralPath 'dist/SHA256SUMS.txt'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Voodoo-Windows-preview
+          path: |
+            dist/Voodoo-Browser-windows-x64.zip
+            dist/SHA256SUMS.txt
+            test-output/app-smoke.json
+            test-output/home.png
+            test-output/library.png

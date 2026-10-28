@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Voodoo Browser</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header id="chrome" aria-label="Browser controls">
+    <div class="tab-row">
+      <button class="wordmark" id="brand-home" title="Voodoo home" aria-label="Voodoo home">V<span>OO</span>D<span>OO</span><i aria-hidden="true">✦</i></button>
+      <div id="tabs" class="tabs" role="tablist" aria-label="Open browser tabs"></div>
+      <button class="icon-button new-tab" id="new-tab" title="New tab" aria-label="New tab">＋</button>
+      <span class="preview-label">DESKTOP PREVIEW</span>
+    </div>
+    <div class="address-row">
+      <div class="history-buttons">
+        <button class="icon-button" id="back" aria-label="Back" title="Back">←</button>
+        <button class="icon-button" id="forward" aria-label="Forward" title="Forward">→</button>
+        <button class="icon-button" id="reload" aria-label="Reload" title="Reload">↻</button>
+      </div>
+      <form id="address-form" class="address-form" role="search">
+        <span class="address-symbol" aria-hidden="true">⌕</span>
+        <input id="address" aria-label="Search or enter a website" placeholder="Search or enter a website" autocomplete="off" spellcheck="false" maxlength="4096">
+        <button type="submit" class="go-button" aria-label="Go">Go <span aria-hidden="true">↗</span></button>
+      </form>
+      <button class="icon-button mint" id="bookmark" title="Save current page to shared favorites" aria-label="Save current page to shared favorites">☆</button>
+      <button class="send-button" id="send-tab" title="Add current page to your shared tab inbox"><span aria-hidden="true">⇄</span> Send tab</button>
+    </div>
+    <nav class="workspace-nav" aria-label="Voodoo sections">
+      <button data-panel="home" aria-current="page"><span aria-hidden="true">⌂</span> Home</button>
+      <button data-panel="library"><span aria-hidden="true">▤</span> Shared library <span id="library-count" class="nav-count">0</span></button>
+      <button data-panel="link"><span aria-hidden="true">⇄</span> Device link</button>
+      <button data-panel="settings"><span aria-hidden="true">⚙</span> Settings</button>
+      <button id="return-page" hidden><span aria-hidden="true">↗</span> Back to page</button>
+      <span class="nav-spacer"></span>
+      <button id="link-status" class="link-status" data-panel="link"><span class="status-dot" aria-hidden="true"></span><span id="link-status-label">Link off</span></button>
+    </nav>
+  </header>
+
+  <main id="workspace">
+    <section id="panel-home" class="panel home-panel" aria-labelledby="home-title">
+      <div class="home-hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="mint-line"></span> YOUR CORNER OF THE WEB</p>
+          <h1 id="home-title">A little more<br><em>you.</em> Everywhere.</h1>
+          <p class="hero-description">Your favorite places, your ideas, your next tab.<br>A space that moves with you.</p>
+          <form id="home-search" class="home-search" role="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="home-search-input" placeholder="Where to next?" aria-label="Search the web or enter a website" autocomplete="off" maxlength="4096">
+            <button type="submit" aria-label="Search"><span aria-hidden="true">→</span></button>
+          </form>
+          <div class="hero-actions"><button class="text-button" data-panel="link">Link your phone <span aria-hidden="true">↗</span></button><span class="subtle">Same Wi-Fi. Your devices.</span></div>
+        </div>
+        <div class="hero-art"><div class="art-orbit" aria-hidden="true"></div><img src="./assets/voodoo-globe.png" alt="Voodoo's colorful stitched globe" width="420" height="420"><span class="art-caption"><span class="tiny-star" aria-hidden="true">✦</span> MADE TO FEEL LIKE YOURS</span></div>
+      </div>
+      <div class="home-bottom">
+        <section class="favorites-section" aria-labelledby="favorites-title">
+          <div class="section-heading"><div><p class="eyebrow muted">YOUR REGULAR SPOTS</p><h2 id="favorites-title">Favorites <span class="mint">↗</span></h2></div><button class="text-button subtle" data-panel="library">View library →</button></div>
+          <div id="home-favorites" class="favorites-grid"></div>
+        </section>
+        <aside class="handoff-card"><span class="card-symbol" aria-hidden="true">⇄</span><p class="eyebrow">A TAB TO GO</p><h3>Pick it up<br>on your phone.</h3><p>Send a page to your shared inbox. Open it when you're ready.</p><button class="text-button" data-panel="link">Set up device link <span aria-hidden="true">→</span></button></aside>
+      </div>
+      <footer class="home-footer"><span><span class="status-dot mint-dot"></span> Local by default</span><span>No background service. Closing Voodoo closes the link.</span><span id="home-version">PREVIEW 0.1.0</span></footer>
+    </section>
+
+    <section id="panel-library" class="panel standard-panel" hidden aria-labelledby="library-title">
+      <div class="page-heading"><div><p class="eyebrow mint">YOUR SHARED SPACE</p><h1 id="library-title">Keep it with you.</h1><p class="page-description">Favorites, note snapshots, and pages to pick up on either device.</p></div><button class="primary-button" id="new-note">＋ Save a note</button></div>
+      <div class="library-toolbar"><div class="filter-tabs" role="tablist" aria-label="Library type"><button data-filter="all" role="tab" aria-selected="true" class="active">Everything</button><button data-filter="bookmark" role="tab" aria-selected="false">Favorites</button><button data-filter="note" role="tab" aria-selected="false">Notes</button><button data-filter="tab" role="tab" aria-selected="false">Tab inbox</button></div><input id="library-search" type="search" placeholder="Find in your library…" aria-label="Find in your shared library" maxlength="200"></div>
+      <p class="library-guidance" id="library-guidance">Items stay on this PC until you pair a phone and sync. Received tabs open only when you choose.</p>
+      <div id="library-items" class="library-grid"></div>
+    </section>
+
+    <section id="panel-link" class="panel standard-panel" hidden aria-labelledby="device-link-title">
+      <div class="page-heading"><div><p class="eyebrow mint">ONE SPACE. TWO SCREENS.</p><h1 id="device-link-title">Meet your other device.</h1><p class="page-description">An encrypted connection over your Wi-Fi or phone hotspot. No cloud account.</p></div><span class="outline-badge">LOCAL LINK</span></div>
+      <div class="link-grid">
+        <section class="surface link-setup">
+          <div class="surface-heading"><div class="step-number">01</div><div><h2>Start the connection</h2><p>Keep Voodoo open on your PC while syncing.</p></div></div>
+          <div class="connection-row"><div><strong id="connection-title">Your link is off</strong><span id="connection-description">Start it when you want to connect your phone.</span></div><button id="toggle-link" class="primary-button">Start local link</button></div>
+          <p class="small-help">Use the same Wi-Fi or hotspot on both devices. If Windows asks, allow access on your trusted private network.</p>
+          <div class="divider"></div>
+          <div class="surface-heading"><div class="step-number">02</div><div><h2>Pair your phone</h2><p>Paste a private pairing code into Voodoo on Android.</p></div></div>
+          <form id="pair-form">
+            <label for="link-address">This PC's network address</label><select id="link-address" required disabled><option value="">Start the link to see available addresses</option></select>
+            <label for="peer-name">Device name</label><input id="peer-name" maxlength="80" value="My phone" placeholder="My phone" required>
+            <p class="small-help" id="address-help">Choose the address on the network shared with your phone.</p>
+            <button id="create-pair-code" class="secondary-button full-width" disabled>Create pairing code <span aria-hidden="true">→</span></button>
+          </form>
+          <div id="pair-result" class="pair-result" hidden>
+            <div class="pair-result-heading"><strong>Private pairing code</strong><span id="pair-expiry"></span></div>
+            <p>On your phone: Tools → Device link → Pair. Keep this code private; it grants access to your shared library.</p>
+            <textarea id="pair-code" aria-label="Private pairing code" readonly rows="3" spellcheck="false"></textarea>
+            <div class="pair-actions"><button id="copy-pair-code" class="primary-button">Copy code</button><button id="hide-pair-code" class="text-button">Hide code</button></div>
+          </div>
+        </section>
+        <div class="link-side">
+          <section class="surface"><p class="eyebrow muted">TRUSTED DEVICES</p><h2>Paired with you</h2><div id="peers" class="peer-list"></div></section>
+          <aside class="link-privacy"><span class="card-symbol" aria-hidden="true">◇</span><h3>Only what you choose.</h3><p>The link shares saved favorites, note snapshots, and sent tabs. Passwords, cookies, API keys, and browsing history stay out of sync.</p><p>Use <strong>Sync now</strong> in the phone's Device link screen. Closing this PC app stops the connection.</p></aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-settings" class="panel standard-panel" hidden aria-labelledby="settings-title">
+      <div class="page-heading"><div><p class="eyebrow mint">YOUR BROWSER, YOUR BOUNDARIES</p><h1 id="settings-title">Keep things personal.</h1><p class="page-description">A simple, local-first preview with clear limits.</p></div></div>
+      <div class="settings-grid"><section class="surface settings-card"><span class="card-symbol" aria-hidden="true">◌</span><h2>Quiet when you're done</h2><p>Voodoo starts when you open it. Closing the window quits the browser and its device link.</p><dl class="settings-facts"><div><dt>Starts with Windows</dt><dd>Off</dd></div><div><dt>Runs in the tray</dt><dd>No</dd></div><div><dt>Cloud account required</dt><dd>No</dd></div></dl></section><section class="surface settings-card"><span class="card-symbol pink" aria-hidden="true">◇</span><h2>Credentials stay separate</h2><p>Website sign-ins belong to this device's browser profile. The phone and PC do not copy passwords, cookies, or API keys between them.</p><p>This preview has no password vault, credential autofill, AI browser control, or userscript execution. Continue using your established browser and password manager for sensitive accounts.</p></section><section class="surface settings-card"><span class="card-symbol" aria-hidden="true">↺</span><h2>Clear browsing data</h2><p>Remove this PC's website cookies, local site storage, and cache. You'll be signed out of websites. Your shared library stays.</p><button id="clear-browsing-data" class="secondary-button">Clear browsing data…</button></section><section class="surface settings-card"><p class="eyebrow muted">ABOUT THIS BUILD</p><h2>Voodoo Desktop <span class="mint" id="settings-version">0.1.0</span></h2><p>Preview software. Security controls and automated tests are not an independent security audit. Phone pairing still needs testing on your actual network and device.</p><p class="small-help">Normal website compatibility varies. A site may decline sign-in from an embedded browser.</p></section></div>
+    </section>
+  </main>
+  <div id="notice" class="notice" role="status" aria-live="polite" hidden><span id="notice-text"></span><button id="notice-close" aria-label="Dismiss message">×</button></div>
+  <dialog id="note-dialog" class="note-dialog"><form id="note-form"><div class="dialog-heading"><div><p class="eyebrow mint">A THOUGHT TO TAKE WITH YOU</p><h2>Save a note</h2></div><button type="button" class="icon-button" id="close-note" aria-label="Close note">×</button></div><label for="note-title">Title</label><input id="note-title" maxlength="200" placeholder="A lyric, an idea, a reminder…" required><label for="note-body">Your note</label><textarea id="note-body" maxlength="20000" rows="9" placeholder="Start here…" required></textarea><p class="small-help">Saves a new snapshot to your shared library. Your original writing archive stays unchanged.</p><div class="dialog-actions"><button type="button" id="cancel-note" class="text-button">Cancel</button><button type="submit" id="save-note" class="primary-button">Save snapshot</button></div></form></dialog>
+  <dialog id="read-note-dialog" class="note-dialog"><div class="dialog-heading"><div><p class="eyebrow mint">SAVED NOTE</p><h2 id="read-note-title"></h2></div><button id="close-read-note" class="icon-button" aria-label="Close saved note">×</button></div><p id="read-note-date" class="small-help"></p><pre id="read-note-body" class="note-body"></pre><div class="dialog-actions"><button id="done-read-note" class="secondary-button">Done</button></div></dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog"><h2 id="confirm-title">Unpair device?</h2><p id="confirm-message"></p><div class="dialog-actions"><button id="confirm-cancel" class="text-button">Cancel</button><button id="confirm-accept" class="danger-button">Unpair</button></div></dialog>
+</body>
+</html>

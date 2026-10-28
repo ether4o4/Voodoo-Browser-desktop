@@ -1,0 +1,11 @@
+node_modules/
+dist/
+artifacts/
+test-output/
+*.log
+.env
+*.key
+*.pem
+*.pfx
+*.keystore
+*.jks
