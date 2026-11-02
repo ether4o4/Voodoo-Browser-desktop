@@ -91,11 +91,11 @@ class Scripts {
   status(){const scripts={};for(const script of this.workspace.scripts())scripts[script.id]={state:this.health[script.id]?.state||(script.enabled?'automatic':script.activation==='manual'?'manual':'saved'),...this.health[script.id],versions:this.workspace.runtime(script.id).history};return {isolatedWorlds:true,scripts,logs:this.workspace.snapshot().logs,menus:[...this.tabs.values()].flatMap(s=>[...s.contexts.values()].flatMap(c=>[...c.menus].map(([command,name])=>({tabId:s.tab.id,context:c.token,command,name,scriptId:c.scriptId}))))};}
   async menu({tabId,context,command}){const s=this.tabs.get(tabId),c=s&&[...s.contexts.values()].find(c=>c.token===context);if(!c||!c.menus.has(command))throw Error('Menu no longer active.');this.eligible(s,c);await this.reply(s,c,{event:'menu',command});return true;}
   async dispatch(s,c,raw){
-    let req;
+    let req,counted=false;
     try{
       if(typeof raw!=='string'||raw.length>1_100_000)throw Error('Script request too large.');req=JSON.parse(raw);if(typeof req.id!=='string'||req.id.length>100)throw Error('Invalid script request.');
       if(Date.now()-c.since>=1000){c.since=Date.now();c.count=0;}if(++c.count>100||c.pending>=32)throw Error('Script request rate limit reached.');
-      const {url}=this.eligible(s,c);c.pending++;
+      const {url}=this.eligible(s,c);c.pending++;counted=true;
       const alias={ready:'info',health:'info',bye:'info',log:'info',menu:'registerMenuCommand',unmenu:'unregisterMenuCommand',closeTab:'openInTab',abort:'xmlhttpRequest'};
       const op=req.op,permission=alias[op]||op,bulk=op==='setValue'&&grant(c.meta,'setValues')||op==='deleteValue'&&grant(c.meta,'deleteValues')||op==='getValue'&&grant(c.meta,'getValues')||op==='abort'&&grant(c.meta,'download');
       if(!grant(c.meta,permission)&&!bulk)throw Error('Missing @grant GM_'+permission);
@@ -131,7 +131,7 @@ class Scripts {
       }
       await this.reply(s,c,{id:req.id,ok:true,data:result});
     }catch(e){if(req?.id)await this.reply(s,c,{id:req.id,ok:false,error:e.message});}
-    finally{c.pending=Math.max(0,c.pending-1);}
+    finally{if(counted)c.pending=Math.max(0,c.pending-1);}
   }
 }
 module.exports={Scripts,source,API_NAMES,grant};
