@@ -103,7 +103,7 @@ async function main(){
     await fs.writeFile(path.join(output,'app-smoke.json'),JSON.stringify({passed:checks.length,checks},null,2));
     console.log(JSON.stringify({passed:checks.length,checks},null,2));
   }catch(error){
-    if(electronApp){const page=await electronApp.firstWindow();await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});console.log('UI failure state',await page.evaluate(()=>voodoo.invoke('state')).catch(()=>null));console.log('Workspace diagnostics',await page.evaluate(()=>voodoo.invoke('studio',{op:'script-status'})).catch(()=>null));}
+    if(electronApp){const page=await electronApp.firstWindow();await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});console.log('UI failure state',await page.evaluate(()=>voodoo.invoke('state')).catch(()=>null));console.log('Internal frame diagnostics',await page.evaluate(()=>[...document.querySelectorAll('iframe')].map(f=>({id:f.id,url:f.src,hidden:f.hidden,text:f.contentDocument?.body?.innerText?.slice(0,2000)}))).catch(()=>null));console.log('Workspace diagnostics',await page.evaluate(()=>voodoo.invoke('studio',{op:'script-status'})).catch(()=>null));}
     throw error;
   }finally{await electronApp?.close().catch(()=>{});}
 }

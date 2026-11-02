@@ -128,7 +128,7 @@
     document.querySelectorAll('.workspace-nav [data-panel]').forEach((button) => { if (button.dataset.panel === panel) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
     document.body.classList.toggle('focus-view',Boolean(state.focusView));
     $('focus-view').textContent=state.focusView?'Show navigation':'Hide navigation';$('focus-view').setAttribute('aria-pressed',String(Boolean(state.focusView)));
-    const pages={studio:'mobile/studio/index.html#workbench',magic:'mobile/magic.html',writing:'mobile/workbench/writing.html'};
+    const pages={studio:'mobile/studio/index.html',magic:'mobile/magic.html',writing:'mobile/workbench/writing.html'};
     for(const name of ['studio','magic','writing']){
       const frame=$(name+'-frame'),visible=panel==='workspace'&&state.workspacePage===name;
       if(visible&&!frame.getAttribute('src'))frame.src='voodoo://app/'+pages[name];

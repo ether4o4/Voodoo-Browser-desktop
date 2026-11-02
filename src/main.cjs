@@ -125,7 +125,7 @@ app.whenReady().then(async()=>{
   await protocol.handle('voodoo',async request=>{
     try{
       const url=new URL(request.url);
-      if(url.host!=='app'||request.method!=='GET'||url.search||url.hash) return new Response('Not found',{status:404});
+      if(url.host!=='app'||request.method!=='GET'||url.search) return new Response('Not found',{status:404});
       const relative=decodeURIComponent(url.pathname).replace(/^\//,'');
       if(!relative||relative.includes('\\')||relative.split('/').some(x=>x==='..'||x==='.')||relative.includes('\0'))return new Response('Not found',{status:404});
       const file=path.resolve(rendererRoot,relative);
