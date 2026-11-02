@@ -27,7 +27,8 @@
     try { const result = await invoke(action, payload); await refresh(); if (success) notice(success); return result; }
     catch (error) { notice(error.message || 'That action could not be completed.', true); return undefined; }
   }
-  function showPanel(panel) { if (panel !== 'link') clearPair(); return run('panel', {name: panel}); }
+  async function flushWorkbench(){const ui=$('studio-frame').contentWindow?.VoodooUI;await ui?.flush?.();}
+  async function showPanel(panel) { if (panel !== 'link') clearPair();try{await flushWorkbench();}catch(e){notice(e.message,true);return;}return run('panel', {name: panel}); }
   function clearPair() {
     clearInterval(pairTimer); pairTimer = null; pairExpires = 0; currentPairId = null;
     $('pair-code').value = ''; $('pair-result').hidden = true; $('pair-expiry').textContent = '';
@@ -121,10 +122,20 @@
     if (!next || typeof next !== 'object') return;
     const oldPanel = state.panel; state = {...state, ...next, tabs: Array.isArray(next.tabs) ? next.tabs : state.tabs, items: Array.isArray(next.items) ? next.items : state.items};
     if (oldPanel === 'link' && state.panel !== 'link') clearPair();
-    const panel = ['home', 'library', 'link', 'settings'].includes(state.panel) ? state.panel : null;
+    const panel = ['home', 'library', 'link', 'settings', 'workspace'].includes(state.panel) ? state.panel : null;
     $('workspace').hidden = panel === null;
-    for (const name of ['home', 'library', 'link', 'settings']) $('panel-' + name).hidden = name !== panel;
+    for (const name of ['home', 'library', 'link', 'settings', 'workspace']) $('panel-' + name).hidden = name !== panel;
     document.querySelectorAll('.workspace-nav [data-panel]').forEach((button) => { if (button.dataset.panel === panel) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
+    document.body.classList.toggle('focus-view',Boolean(state.focusView));
+    $('focus-view').textContent=state.focusView?'Show navigation':'Hide navigation';$('focus-view').setAttribute('aria-pressed',String(Boolean(state.focusView)));
+    const pages={studio:'mobile/studio/index.html',magic:'mobile/magic.html',writing:'mobile/workbench/writing.html'};
+    for(const name of ['studio','magic','writing']){
+      const frame=$(name+'-frame'),visible=panel==='workspace'&&state.workspacePage===name;
+      if(visible&&!frame.getAttribute('src'))frame.src='voodoo://app/'+pages[name];
+      if(frame.hidden===visible){frame.hidden=!visible;frame.contentWindow?.dispatchEvent(new Event(visible?'voodoo:show':'voodoo:hide'));}
+    }
+    const home=$('home-frame'),homeActive=String(panel==='home');if(home.dataset.active!==homeActive){home.dataset.active=homeActive;home.contentWindow?.VoodooHome?.setActive(panel==='home');}
+    document.querySelectorAll('[data-workspace]').forEach(button=>button.setAttribute('aria-current',panel==='workspace'&&button.dataset.workspace===state.workspacePage?'page':'false'));
     const tab = activeTab();
     if (document.activeElement !== $('address')) $('address').value = tab && /^https?:\/\//.test(tab.url || '') ? tab.url : '';
     $('back').disabled = !tab?.canGoBack; $('forward').disabled = !tab?.canGoForward; $('reload').disabled = !tab;
@@ -143,10 +154,13 @@
   }
   function resolveConfirm(value) { const resolve = confirmResolve; confirmResolve = null; $('confirm-dialog').close(); resolve?.(value); }
 
+  $('home-frame').addEventListener('load',()=>{$('home-frame').contentWindow?.VoodooHome?.setActive(state.panel==='home');});
   $('brand-home').addEventListener('click', () => showPanel('home'));
   $('new-tab').addEventListener('click', () => { clearPair(); run('new-tab'); });
   for (const action of ['back', 'forward', 'reload']) $(action).addEventListener('click', () => run(action));
   for (const button of document.querySelectorAll('[data-panel]')) button.addEventListener('click', () => showPanel(button.dataset.panel));
+  for(const button of document.querySelectorAll('[data-workspace]'))button.addEventListener('click',async()=>{try{await flushWorkbench();await run('workspace',{page:button.dataset.workspace});}catch(e){notice(e.message,true);}});
+  $('focus-view').addEventListener('click',()=>run('focus-view'));
   $('return-page').addEventListener('click', () => showPanel(null));
   $('address-form').addEventListener('submit', (event) => { event.preventDefault(); const url = $('address').value.trim(); if (url) { clearPair(); run('navigate', {url}); $('address').blur(); } });
   $('address').addEventListener('focus', () => $('address').select());

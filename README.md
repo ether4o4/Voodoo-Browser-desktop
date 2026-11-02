@@ -27,13 +27,45 @@ profile. A release update preserving that profile needs the original signing key
 - Device revocation and explicit Link on/off. Every desktop launch starts with
   Link off; Android sync is on demand while the Device link screen is foreground.
 
-The full Android AI, script editor, writing archive and local model are not ported
-in this desktop preview. No dedicated Suno section or automatic generation loop
-is included. Regular Suno browsing is available subject to its login support.
+Desktop 0.2.0 carries over the mobile 0.3.6 home, globe, script workbench and
+writing archive. AI, provider connections, offline models and voice are deferred.
+
+- **Workbench:** edit/import/export `.user.js` source, select saved scripts,
+  check syntax, keep draft history, review permissions and source diffs, check
+  updates, restore installed versions disabled, and block scripts per website.
+- **Magic scripts:** discover Greasy Fork scripts for the current website,
+  review source, browse all saved scripts, and use script commands. Results are
+  shown 20 at a time; the bounded cache and cancellation prevent stale searches.
+- **Activation:** choose exactly one of Save to scripts (inactive), Automatic
+  (next matching document), or Manual (only after Activate). Saving never reloads
+  or executes the current page. Manual activation confirms and reloads once.
+- **Mobile UI:** the same responsive workbench, retrowave styles, five pin groups,
+  workspace names and interactive globe. Persistent Workbench/Magic/Back to page
+  navigation keeps drafts available. Hide navigation preserves the section bar.
+- **Writing:** the existing mobile writing archive, protected lines, snapshots,
+  rules and archive import/export. It is separate from shared note snapshots.
+
+Scripts use separate Chromium isolated worlds with no website preload or Node.
+The mobile supported GM subset includes values/listeners, DOM helpers, resources,
+HTTPS requests, menus, reviewed downloads/clipboard/tab requests, and logs.
+`@match`, `@include`, exclusions, `@noframes`, grants and `@connect` are enforced
+natively. No unsafeWindow, website cookies, GM_cookie, Node or full Tampermonkey
+compatibility is claimed. Unsupported APIs are reported before activation.
+Disabling stops future automatic injection and native privileges; reload to
+remove a script's existing DOM changes and user-created timers. Script updates
+require source review and saving; they never install themselves.
+
+Scripts and their GM values are encrypted separately from the shared library.
+Backups include scripts, values, history, pins and writing, excluding website
+logins and pairing secrets. Mobile JSON backups can be imported in Workbench
+Settings; restored scripts start disabled. Scripts do not automatically sync over
+Wi-Fi: the existing link still exchanges selected favorites, notes and tabs.
+No dedicated Suno section or automatic generation loop is included.
 
 ## Pair the phone
 
-1. Install the companion preview separately from your original browser.
+1. Open the latest Android Voodoo app. The separate companion preview download
+   above uses its own profile; keep your original app installed.
 2. Put phone and PC on the same trusted Wi-Fi or phone hotspot.
 3. In desktop **Device link**, start the link, select the PC's private-network
    address and create a pairing code. If Windows asks, allow only your trusted
@@ -61,8 +93,7 @@ Windows user. Android pairing secrets use the existing Android Keystore store.
 
 External web pages run sandboxed with no application preload or Node access.
 Only the exact internal top-level page can use the app's narrow controls. Website
-camera/microphone/location permissions are denied in this preview. No desktop
-userscripts, remote AI control, password autofill or passkey integration is claimed.
+camera/microphone/location permissions are denied in this preview. Remote AI control, password autofill and passkey integration are deferred.
 Some websites reject embedded browser sign-in. Keep a mature browser/password
 manager available for those accounts. Browser-engine updates require a new build;
 there is no automatic updater yet.
@@ -87,3 +118,15 @@ rolling release for the exact checks executed and remaining device-test limits.
 
 The familiar globe artwork comes from the owner's Android Voodoo project. Its
 existing browser/profile data is never copied as part of packaging.
+
+## Update an existing Windows copy
+
+Close Voodoo, extract the complete new ZIP to its own folder, and launch
+`Voodoo.exe`. The application identity and Windows user-data location are unchanged;
+your existing website profile, shared library and pairings are retained. Do not
+remove the Windows user-data folder. No installer or uninstall step is required.
+
+Mobile UI/assets are based on `ether4o4/Voodoo-Browser` source
+`7a8f74cb9154a93d7ab8744b69ebe15091a9a51b` (0.3.6). The desktop runtime and
+bridge are native Electron adaptations. Third-party notices are under
+`renderer/mobile/licenses` and `renderer/mobile/vendor`.
