@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 
 // The encryption provider is Electron safeStorage in production. No plaintext fallback.
 class ProtectedStore {
-  constructor(file, provider) { this.file=file; this.provider=provider; this.state={items:[]}; }
+  constructor(file, provider, limit=4*1024*1024) { this.file=file; this.provider=provider; this.limit=limit; this.state={items:[]}; }
   async init() {
     if (!await this.provider.isAsyncEncryptionAvailable()) throw Error('Windows protected storage is unavailable. Voodoo will not save unprotected pairing secrets.');
     let encrypted;
@@ -24,7 +24,7 @@ class ProtectedStore {
   snapshot() { return structuredClone(this.state); }
   async save(state) {
     const plain=JSON.stringify(state);
-    if(Buffer.byteLength(plain)>4*1024*1024) throw Error('The local library is full.');
+    if(Buffer.byteLength(plain)>this.limit) throw Error('The local library is full. Export a backup before removing older items.');
     const encrypted=await this.provider.encryptStringAsync(plain);
     if(!Buffer.isBuffer(encrypted)||!encrypted.length) throw Error('Protected storage did not produce an encrypted result.');
     await fs.mkdir(path.dirname(this.file),{recursive:true});

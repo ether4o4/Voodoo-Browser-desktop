@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Voodoo Browser</title><link rel="stylesheet" href="studio/style.css"><link rel="stylesheet" href="retrowave.css"><script defer src="studio/bridge.js"></script><script defer src="pins.js"></script><script defer src="globe.bundle.js"></script><script defer src="home.js"></script><link rel="stylesheet" href="desktop.css"></head>
+<body class="home"><main class="home-inner">
+  <div class="home-art"><img id="home-image" src="../assets/voodoo-globe.png" alt="VOODOO BROWSER — an embroidered globe with colorful pins" width="290" height="260"></div>
+  <h1>Voodoo browser</h1>
+  <form id="search-form" class="search-box"><input id="search" aria-label="Search the web or enter an address" placeholder="Search or enter an address…" autocomplete="off"><button aria-label="Search">↗</button></form>
+  <section class="favorites-section" aria-labelledby="favorites-title">
+    <header class="recent-heading"><h2 id="favorites-title">Favorites</h2><div><button id="favorite-add">+ Add</button><button id="favorites-all" class="text">Show all</button><button id="favorites-retry" class="text" hidden>Retry</button></div></header>
+    <div id="favorites" class="recent-sites" aria-busy="true"></div><p id="favorites-status" class="recent-status" role="status">Loading favorites.</p>
+  </section>
+  <section class="recent-section" aria-labelledby="recent-title">
+    <header class="recent-heading"><h2 id="recent-title">Recently visited</h2><button id="recent-retry" class="text" hidden>Retry</button></header>
+    <div id="recent-sites" class="recent-sites" aria-busy="true"></div>
+    <p id="recent-status" class="recent-status" role="status">Loading recent sites…</p>
+  </section>
+  <section class="workspace-section" aria-labelledby="workspace-title">
+    <header class="workspace-heading"><div><h2 id="workspace-title">Workspaces</h2></div><button id="rename">Rename</button></header>
+    <div id="workspace-filters" class="workspace-filters" aria-label="Filter workspace"></div>
+    <div class="workspace-body"><div>
+      <div id="globe" class="globe-box" aria-label="Interactive globe. Drag to turn; tap a pin to select it.">
+        <svg class="globe-orbit" viewBox="0 0 400 400" aria-hidden="true"><defs><path id="orbit-path" d="M 25 200 a 175 63 0 1 1 350 0 a 175 63 0 1 1 -350 0"/></defs><text><textPath id="orbit-front" href="#orbit-path" startOffset="8%">VOODOO</textPath><textPath id="orbit-back" href="#orbit-path" startOffset="58%">BROWSER</textPath></text></svg>
+      </div>
+      <p class="globe-caption" id="globe-caption">Drag to turn. Tap a pin to find its site.</p><div class="globe-controls"><button id="rotate" aria-pressed="true">Pause rotation</button><button id="cancel-move" hidden>Cancel move</button></div>
+    </div><div><div id="pin-list" class="pin-list" aria-live="polite"><p class="workspace-empty">Loading your pins…</p></div><div class="pin-actions"><button id="add-pin" class="primary">＋ Pin a site</button><button id="open-workspace">Open workspace</button></div><p class="workspace-foot">Use the ··· button beside a pin to edit it.</p></div></div>
+  </section>
+  <p id="status" class="home-status" role="status"></p>
+  <dialog id="pin-dialog"><form id="pin-form"><h2 id="pin-dialog-title">Pin a site</h2><label>Site name<input id="pin-title" maxlength="120" required></label><label id="pin-url-label">Website<input id="pin-url" type="url" placeholder="https://example.com" required></label><label>Workspace<select id="pin-group"></select></label><p id="pin-error" role="alert"></p><div class="row wrap"><button type="button" id="move-pin">Place on globe</button><button type="button" id="remove-pin" class="danger">Unpin</button></div><div class="row"><button type="button" data-close="pin-dialog">Cancel</button><button class="primary" id="save-pin">Save pin</button></div></form></dialog>
+  <dialog id="names-dialog"><form id="names-form"><h2>Rename workspaces</h2><p>Choose a name for each color.</p><div id="name-fields"></div><p id="names-error" role="alert"></p><div class="row"><button type="button" data-close="names-dialog">Cancel</button><button class="primary">Save names</button></div></form></dialog>
+</main></body></html>
