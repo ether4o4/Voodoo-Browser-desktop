@@ -38,7 +38,7 @@ function newTab(url) {
   hidePairCode();
   const view=new WebContentsView({webPreferences:{session:webSession,nodeIntegration:false,contextIsolation:true,sandbox:true,webSecurity:true,allowRunningInsecureContent:false,backgroundThrottling:true,spellcheck:true}});
   const tab={id:randomUUID(),title:'New tab',url:'',loading:false,hasDocument:false,failed:false,view};tabs.set(tab.id,tab);window.contentView.addChildView(view);
-  const wc=view.webContents;tab.scriptsReady=wc.loadURL('about:blank').then(()=>scripts.add(tab));
+  const wc=view.webContents;tab.scriptsReady=wc.loadURL('about:blank').then(()=>{if(!wc.isDestroyed()&&tabs.has(tab.id))return scripts.add(tab);}).catch(()=>{if(!wc.isDestroyed())emit('This tab could not initialize. Close it and open a new tab.');});
   const navigation=(event,destination)=>{try{websiteUrl(destination);}catch{event.preventDefault();emit('Blocked an unsupported navigation.');}};
   wc.on('will-navigate',navigation);wc.on('will-redirect',navigation);
   // No website can open tabs without explicit review in this first preview.

@@ -81,6 +81,8 @@ async function main(){
     await waitState(page,s=>s.items.some(x=>x.kind==='bookmark')&&s.items.some(x=>x.kind==='tab'));
     await page.screenshot({path:path.join(output,'library.png')});
     record('Current website can be saved and queued to the shared tab inbox');
+    for(let i=0;i<4;i++){const state=await page.evaluate(()=>voodoo.invoke('new-tab'));await page.evaluate(id=>voodoo.invoke('close-tab',{id}),state.activeTabId);}
+    await new Promise(r=>setTimeout(r,300));assert.ok((await page.evaluate(()=>voodoo.invoke('state'))).tabs.length===1);record('Rapidly opening and closing new tabs leaves the application and original website intact');
     await page.locator('[data-panel="link"]').first().click();await page.locator('#toggle-link').click();
     await waitState(page,s=>s.link.running);
     const linkState=await page.evaluate(async()=>(await window.voodoo.invoke('state')).link);

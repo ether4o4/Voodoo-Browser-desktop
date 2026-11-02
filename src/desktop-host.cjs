@@ -27,7 +27,7 @@ function createHost({workspace,scripts,discovery,current,navigate,route,openTab,
         return workspace.saveChoice({...payload,name:record?.name.slice(0,120),sourceURL:record?.code_url,sourceHost:current()?.url?new URL(current().url).hostname:'',expectedHash:hash(payload.code)});
       }
       case 'run-script':{const t=current();if(!t?.hasDocument||t.loading)throw Error('Wait for the website to load first.');const result=await scripts.manual(t,payload.script);route(null);return result;}
-      case 'script-status':return scripts.status();
+      case 'script-status':{const status=scripts.status();status.menus=status.menus.filter(m=>m.tabId===current()?.id);return status;}
       case 'script-menu':return scripts.menu(payload);
       case 'script-log':return workspace.snapshot().logs.map(l=>new Date(l.at).toLocaleString()+' · '+l.scriptId+' · '+l.level+' · '+l.text).join('\n');
       case 'script-backup':{const data=workspace.snapshot(),result={};for(const s of workspace.scripts()){const r=data.runtime[s.id]||{};result[s.id]={values:r.values||{},blocked:r.blocked||[],history:r.history||[]};}return result;}

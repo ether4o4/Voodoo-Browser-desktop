@@ -9,7 +9,7 @@
   const sections=new Set(['scripts','settings']);
   function show(id){if(id==='workbench')id='scripts';if(id!=='chat')workspace?.stopVoice();if(!sections.has(id))id='scripts';document.querySelectorAll('.section').forEach(el=>el.hidden=el.id!==id);document.querySelectorAll('[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===id));const route=id==='scripts'?'workbench':id;if(location.hash!=='#'+route)history.replaceState(history.state,'','#'+route);if(id==='scripts')renderHistory();}
   addEventListener('voodoo:show',()=>{if(initialized)globalThis.VoodooUI.refresh?.().catch(fail);});addEventListener('voodoo:hide',()=>{if(initialized)persist().catch(fail);});
-  addEventListener('hashchange',()=>{if(initialized)show(location.hash.slice(1));globalThis.VoodooUI.flush=persist;globalThis.VoodooUI.refresh=async()=>{await saving.catch(()=>{});const latest=await Host.call('get-store',{key:'studio'});if(latest&&(latest._revision||0)!==revision){state=mergeSaved(latest);revision=latest._revision||0;state._revision=revision;baseline=copy(latest);renderScripts();}};});
+  addEventListener('hashchange',()=>{if(initialized)show(location.hash.slice(1));});
   globalThis.VoodooUI={show};
   const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
   const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
