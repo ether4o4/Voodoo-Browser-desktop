@@ -41,6 +41,7 @@ jobs:
             test-output/home.png
             test-output/library.png
             test-output/workbench.png
+            test-output/failure.png
             dist/build-evidence.json
       - name: Publish verified rolling preview
         if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/codex/desktop-mobile-parity' || github.ref == 'refs/heads/main')

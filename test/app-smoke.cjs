@@ -2,7 +2,7 @@
 const {_electron}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),net=require('node:net');
 const root=path.resolve(__dirname,'..');
-async function waitState(page,predicate,timeout=45000){const end=Date.now()+timeout;while(Date.now()<end){const state=await page.evaluate(()=>window.voodoo.invoke('state'));if(predicate(state))return state;await new Promise(r=>setTimeout(r,100));}throw Error('Application state did not reach the expected result.');}
+async function waitState(page,predicate,timeout=45000){const end=Date.now()+timeout;while(Date.now()<end){const state=await page.evaluate(()=>window.voodoo.invoke('state'));if(predicate(state))return state;await new Promise(r=>setTimeout(r,100));}throw Error('Application state did not reach the expected result: '+JSON.stringify(await page.evaluate(()=>window.voodoo.invoke('state'))));}
 async function main(){
   const output=path.join(root,'test-output');await fs.mkdir(output,{recursive:true});
   const profile=await fs.mkdtemp(path.join(output,'profile-'));
@@ -102,6 +102,9 @@ async function main(){
     record('Library and scripts decrypt after reopening; link starts off');
     await fs.writeFile(path.join(output,'app-smoke.json'),JSON.stringify({passed:checks.length,checks},null,2));
     console.log(JSON.stringify({passed:checks.length,checks},null,2));
+  }catch(error){
+    if(electronApp){const page=await electronApp.firstWindow();await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});console.log('UI failure state',await page.evaluate(()=>voodoo.invoke('state')).catch(()=>null));console.log('Workspace diagnostics',await page.evaluate(()=>voodoo.invoke('studio',{op:'script-status'})).catch(()=>null));}
+    throw error;
   }finally{await electronApp?.close().catch(()=>{});}
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

@@ -38,7 +38,7 @@ function newTab(url) {
   hidePairCode();
   const view=new WebContentsView({webPreferences:{session:webSession,nodeIntegration:false,contextIsolation:true,sandbox:true,webSecurity:true,allowRunningInsecureContent:false,backgroundThrottling:true,spellcheck:true}});
   const tab={id:randomUUID(),title:'New tab',url:'',loading:false,hasDocument:false,failed:false,view};tabs.set(tab.id,tab);window.contentView.addChildView(view);
-  const wc=view.webContents;tab.scriptsReady=scripts.add(tab);
+  const wc=view.webContents;tab.scriptsReady=wc.loadURL('about:blank').then(()=>scripts.add(tab));
   const navigation=(event,destination)=>{try{websiteUrl(destination);}catch{event.preventDefault();emit('Blocked an unsupported navigation.');}};
   wc.on('will-navigate',navigation);wc.on('will-redirect',navigation);
   // No website can open tabs without explicit review in this first preview.
@@ -47,7 +47,7 @@ function newTab(url) {
   wc.on('did-finish-load',()=>{if(!tab.failed){try{tab.url=websiteUrl(wc.getURL());tab.hasDocument=true;void workspace.update(d=>{d.recent=[{url:tab.url,title:tab.title},...(d.recent||[]).filter(x=>new URL(x.url).hostname!==new URL(tab.url).hostname)].slice(0,30);return true;}).catch(()=>{});}catch{tab.hasDocument=false;}}emit();});
   wc.on('did-start-loading',()=>{tab.loading=true;emit();});
   wc.on('did-stop-loading',()=>{if(wc.getURL()===tab.url&&!wc.isLoadingMainFrame())tab.loading=false;emit();});
-  wc.on('did-navigate',(_event,target)=>{tab.url=target;emit();});
+  wc.on('did-navigate',(_event,target)=>{try{tab.url=websiteUrl(target);}catch{tab.url='';}emit();});
   wc.on('did-navigate-in-page',(_event,target,main)=>{if(main){tab.url=target;emit();}});
   wc.on('page-title-updated',(_event,title)=>{tab.title=String(title).slice(0,200);emit();});
   wc.on('did-fail-load',(_event,code,_description,_url,main)=>{if(main&&code!==-3){tab.failed=true;tab.hasDocument=false;tab.loading=false;try{tab.url=websiteUrl(wc.getURL());}catch{tab.url='';}emit('The page could not load. Check its address and connection.');}});
